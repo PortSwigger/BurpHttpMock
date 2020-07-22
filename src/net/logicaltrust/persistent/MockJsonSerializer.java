@@ -6,6 +6,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.logicaltrust.SimpleLogger;
 import net.logicaltrust.model.MockEntry;
+import net.logicaltrust.model.MockHttpMethodEnum;
 import net.logicaltrust.model.MockProtocolEnum;
 import net.logicaltrust.model.MockRule;
 
@@ -74,6 +75,7 @@ public class MockJsonSerializer {
             jsonWriter.name("path").value(mockRule.getPath());
             jsonWriter.name("port").value(mockRule.getPort());
             jsonWriter.name("protocol").value(mockRule.getProtocol().name());
+            jsonWriter.name("method").value(mockRule.getHttpMethod().name());
             jsonWriter.endObject();
         }
 
@@ -97,6 +99,10 @@ public class MockJsonSerializer {
 
                     case "protocol":
                         rule.setProtocol(MockProtocolEnum.valueOf(jsonReader.nextString()));
+                        break;
+
+                    case "method":
+                        rule.setHttpMethod(MockHttpMethodEnum.valueOf(jsonReader.nextString()));
                         break;
                 }
             }

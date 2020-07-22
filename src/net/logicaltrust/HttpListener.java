@@ -29,8 +29,12 @@ public class HttpListener implements IProxyListener {
             IHttpRequestResponse messageInfo = message.getMessageInfo();
             IRequestInfo analyzedReq = helpers.analyzeRequest(messageInfo.getHttpService(), messageInfo.getRequest());
             URL url = analyzedReq.getUrl();
+            String method = analyzedReq.getMethod();
+            if (method.isEmpty()) {
+                method = "Any";
+            }
             if (isReq) {
-                handleRequest(messageInfo, url, message);
+                handleRequest(messageInfo, url, message, method);
             } else if (isMockedResponse(url)) {
                 handleResponse(messageInfo, url);
             }
@@ -53,9 +57,9 @@ public class HttpListener implements IProxyListener {
         }
     }
 
-    private void handleRequest(IHttpRequestResponse messageInfo, URL url, IInterceptedProxyMessage message) {
+    private void handleRequest(IHttpRequestResponse messageInfo, URL url, IInterceptedProxyMessage message, String method) {
         Optional<MockEntry> match = mockRepository.findMatch(url);
-        if (match.isPresent()) {
+        if (match.isPresent() && isHttpMethodMatch(match.get(), method)) {
             MockEntry matchEntry = match.get();
             logger.debug("Successful URL match: " + url + " with " + matchEntry);
             if (!matchEntry.handleRequest(messageInfo)) {
@@ -69,5 +73,14 @@ public class HttpListener implements IProxyListener {
         }
     }
 
+    private boolean isHttpMethodMatch(MockEntry mockEntry, String requestMethod) {
+        logger.debug("isHttpMethodMatch: mockEntry = " + mockEntry + ", requestMethod = " + requestMethod);
+        if (mockEntry == null) {
+            return false;
+        }
+
+        String method = mockEntry.getRule().getHttpMethod().toString();
+        return method.equalsIgnoreCase("any") || method.equalsIgnoreCase(requestMethod);
+    }
 
 }

@@ -76,7 +76,7 @@ public class MockContextMenuFactory implements IContextMenuFactory {
                 if (addOption == AddMockOption.SITEMAP) {
                     processSitemap(analyzedURL);
                 } else {
-                    addMock(addOption.isFullUrl(), msg, analyzedURL);
+                    addMock(addOption.isFullUrl(), msg, analyzedURL, getAnalyzedMethod(msg));
                 }
             }
         } catch (Exception ex) {
@@ -95,7 +95,7 @@ public class MockContextMenuFactory implements IContextMenuFactory {
                 continue;
             }
             URL analyzedURL = getAnalyzedURL(msg);
-            addMock(AddMockOption.SITEMAP.isFullUrl(), msg, analyzedURL);
+            addMock(AddMockOption.SITEMAP.isFullUrl(), msg, analyzedURL, getAnalyzedMethod(msg));
         }
     }
 
@@ -104,12 +104,21 @@ public class MockContextMenuFactory implements IContextMenuFactory {
         return analyzedReq.getUrl();
     }
 
-    private void addMock(boolean fullURL, IHttpRequestResponse msg, URL analyzedURL) {
+    private String getAnalyzedMethod(IHttpRequestResponse msg) {
+        IRequestInfo analyzedReq = helpers.analyzeRequest(msg.getHttpService(), msg.getRequest());
+        String method = analyzedReq.getMethod();
+        if (method.isEmpty()) {
+            method = "Any";
+        }
+        return method;
+    }
+
+    private void addMock(boolean fullURL, IHttpRequestResponse msg, URL analyzedURL, String method) {
         MockRule mockRule;
         if (fullURL) {
-            mockRule = MockRule.fromURL(analyzedURL);
+            mockRule = MockRule.fromURL(analyzedURL, method);
         } else {
-            mockRule = MockRule.fromURLwithoutQuery(analyzedURL);
+            mockRule = MockRule.fromURLwithoutQuery(analyzedURL, method);
         }
         MockEntry mockEntry = new MockEntry(true, mockRule, msg.getResponse());
         mockAdder.addMock(mockEntry);

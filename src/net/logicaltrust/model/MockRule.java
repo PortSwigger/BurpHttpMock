@@ -11,6 +11,8 @@ public class MockRule {
     @Expose
     private MockProtocolEnum protocol;
     @Expose
+    private MockHttpMethodEnum httpMethod;
+    @Expose
     private String host;
     @Expose
     private String port;
@@ -20,26 +22,29 @@ public class MockRule {
     private Pattern portRegex;
     private Pattern hostRegex;
 
-    public MockRule(MockProtocolEnum protocol, String host, String port, String path) {
+    public MockRule(MockProtocolEnum protocol, MockHttpMethodEnum httpMethod, String host, String port, String path) {
         this.setHost(host);
         this.setPath(path);
         this.setPort(port);
         this.protocol = protocol;
+        this.httpMethod = httpMethod;
     }
 
     public MockRule() {
 
     }
 
-    public static MockRule fromURLwithoutQuery(URL url) {
+    public static MockRule fromURLwithoutQuery(URL url, String method) {
         return new MockRule(MockProtocolEnum.fromURL(url),
+                MockHttpMethodEnum.valueOf(method),
                 decorateFull(url.getHost()),
                 decorateFull(getPortFromURL(url)),
                 decorateFromStart(url.getPath()));
     }
 
-    public static MockRule fromURL(URL url) {
+    public static MockRule fromURL(URL url, String method) {
         return new MockRule(MockProtocolEnum.fromURL(url),
+                MockHttpMethodEnum.valueOf(method),
                 decorateFull(url.getHost()),
                 decorateFull(getPortFromURL(url)),
                 decorateFull(url.getFile()));
@@ -109,13 +114,22 @@ public class MockRule {
         this.protocol = protocol;
     }
 
+    public MockHttpMethodEnum getHttpMethod() {
+        return httpMethod;
+    }
+
+    public void setHttpMethod(MockHttpMethodEnum method) {
+        this.httpMethod = method;
+    }
+
     @Override
     public String toString() {
-        return "MockRule [protocol=" + protocol + ", host=" + host + ", port=" + port + ", path=" + path + "]";
+        return "MockRule [protocol=" + protocol + ", method=" + httpMethod + ", host=" + host + ", port=" + port +
+                ", path=" + path + "]";
     }
 
     public MockRule duplicate() {
-        return new MockRule(this.protocol, this.host, this.port, this.path);
+        return new MockRule(this.protocol, this.httpMethod, this.host, this.port, this.path);
     }
 
 }

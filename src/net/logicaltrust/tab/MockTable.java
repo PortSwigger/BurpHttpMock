@@ -3,6 +3,7 @@ package net.logicaltrust.tab;
 import net.logicaltrust.SimpleLogger;
 import net.logicaltrust.editor.MockRuleEditor;
 import net.logicaltrust.model.MockEntry;
+import net.logicaltrust.model.MockHttpMethodEnum;
 import net.logicaltrust.model.MockProtocolEnum;
 import net.logicaltrust.model.MockRule;
 import net.logicaltrust.persistent.MockJsonSerializer;
@@ -236,15 +237,23 @@ class MockTable extends JPanel {
         table.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(protoCombo));
     }
 
+    private void prepareHttpMethodEnumCombo(JTable table) {
+        JComboBox<MockHttpMethodEnum> httpMethodCombo = new JComboBox<>(MockHttpMethodEnum.values());
+        table.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(httpMethodCombo));
+    }
+
     private void handleAdd() {
         JComboBox<MockProtocolEnum> proto = new JComboBox<>(MockProtocolEnum.values());
+        JComboBox<MockHttpMethodEnum> method = new JComboBox<>(MockHttpMethodEnum.values());
         JTextField host = new JTextField();
         JTextField port = new JTextField();
         JTextField file = new JTextField();
-        Object[] msg = new Object[]{"Protocol", proto, "Host", host, "Port", port, "File", file};
+        Object[] msg = new Object[]{"Protocol", proto, "Method", method, "Host", host, "Port", port, "File", file};
         int result = JOptionPane.showConfirmDialog(this, msg, "Add mock", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
-            MockRule rule = new MockRule((MockProtocolEnum) proto.getSelectedItem(), host.getText(), port.getText(), file.getText());
+            MockRule rule = new MockRule((MockProtocolEnum) proto.getSelectedItem(),
+                    (MockHttpMethodEnum) method.getSelectedItem(),
+                    host.getText(), port.getText(), file.getText());
             addRule(rule);
         }
     }
@@ -264,7 +273,7 @@ class MockTable extends JPanel {
             String clipboard = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
             try {
                 URL url = new URL(clipboard);
-                MockRule rule = MockRule.fromURL(url);
+                MockRule rule = MockRule.fromURL(url, "Any");
                 addRule(rule);
             } catch (MalformedURLException e2) {
                 logger.debug("Cannot parse URL " + clipboard);
@@ -292,11 +301,14 @@ class MockTable extends JPanel {
         table.getColumnModel().getColumn(0).setMaxWidth(65);
         table.getColumnModel().getColumn(1).setMaxWidth(75);
         table.getColumnModel().getColumn(1).setPreferredWidth(70);
-        table.getColumnModel().getColumn(2).setPreferredWidth(150);
-        table.getColumnModel().getColumn(3).setMaxWidth(70);
-        table.getColumnModel().getColumn(3).setPreferredWidth(70);
-        table.getColumnModel().getColumn(4).setPreferredWidth(300);
+        table.getColumnModel().getColumn(2).setPreferredWidth(90);
+        table.getColumnModel().getColumn(2).setMaxWidth(90);
+        table.getColumnModel().getColumn(3).setPreferredWidth(150);
+        table.getColumnModel().getColumn(4).setMaxWidth(70);
+        table.getColumnModel().getColumn(4).setPreferredWidth(70);
+        table.getColumnModel().getColumn(5).setPreferredWidth(300);
         prepareProtocolEnumCombo(table);
+        prepareHttpMethodEnumCombo(table);
         JScrollPane scroll = new JScrollPane(table);
         scroll.setVisible(true);
         this.add(scroll, BorderLayout.CENTER);

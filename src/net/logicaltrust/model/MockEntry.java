@@ -82,7 +82,7 @@ public class MockEntry {
     }
 
     public Object[] toObject() {
-        return new Object[]{enabled, getRule().getProtocol(), getRule().getHost(), getRule().getPort(), getRule().getPath()};
+        return new Object[]{enabled, getRule().getProtocol(), getRule().getHttpMethod(),  getRule().getHost(), getRule().getPort(), getRule().getPath()};
     }
 
     @Override

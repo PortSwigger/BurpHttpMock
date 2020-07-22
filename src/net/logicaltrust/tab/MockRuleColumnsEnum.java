@@ -10,6 +10,8 @@ public enum MockRuleColumnsEnum {
 
     PROTOCOL("Protocol"),
 
+    METHOD("Method"),
+
     HOST("Host"),
 
     PORT("Port"),

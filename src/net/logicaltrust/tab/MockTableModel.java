@@ -2,6 +2,7 @@ package net.logicaltrust.tab;
 
 import net.logicaltrust.SimpleLogger;
 import net.logicaltrust.model.MockEntry;
+import net.logicaltrust.model.MockHttpMethodEnum;
 import net.logicaltrust.model.MockProtocolEnum;
 import net.logicaltrust.persistent.MockRepository;
 
@@ -67,6 +68,9 @@ class MockTableModel extends DefaultTableModel {
                 break;
             case PROTOCOL:
                 mockHolder.update(row, e -> e.getRule().setProtocol((MockProtocolEnum) value));
+                break;
+            case METHOD:
+                mockHolder.update(row, e -> e.getRule().setHttpMethod((MockHttpMethodEnum) value));
                 break;
             default:
                 break;
