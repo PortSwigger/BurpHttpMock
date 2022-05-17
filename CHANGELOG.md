@@ -1,3 +1,9 @@
+## 1.1.5
+Fix connection errors.
+
+## 1.1.4
+Support distinguishing requests by HTTP method.
+
 ## 1.1.2
 Fixed a bug with file handling and another bug with inter-process communication.
 
